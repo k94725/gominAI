@@ -1,4 +1,3 @@
-import { LucideIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -6,22 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CounselorInterface } from "@/types/counselor";
 
 interface CounselorCardProps {
-  icon: LucideIcon;
-  name: string;
-  type: string;
-  description: string;
-  iconBgColor: string;
+  counselor: CounselorInterface;
 }
 
-export function CounselorCard({
-  icon: Icon,
-  name,
-  type,
-  description,
-  iconBgColor,
-}: CounselorCardProps) {
+export function CounselorCard({ counselor }: CounselorCardProps) {
+  const { icon: Icon, name, type, description, iconBgColor } = counselor;
   return (
     <Card className="bg-white border-neutral-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="text-center pb-6 pt-8">
