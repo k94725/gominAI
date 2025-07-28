@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -11,7 +11,7 @@ const getMockResponse = (
   userName: string,
   userMessage: string,
 ) => {
-  if (counselorType === "A") {
+  if (counselorType === "empathetic") {
     return `안녕하세요 ${userName}님! 말씀해주신 내용을 들으니 정말 힘드셨겠어요. 그런 마음이 드실 수 있어요. 충분히 이해됩니다. 
 
 더 자세히 이야기해주시면 함께 생각해보면서 해결방안을 찾아보겠습니다. 편안한 마음으로 말씀해주세요.`;
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     // 상담사 유형에 따른 시스템 프롬프트 설정
     let systemPrompt = "";
 
-    if (counselorType === "A") {
+    if (counselorType === "empathetic") {
       systemPrompt = `당신은 감정적 공감과 위로를 중시하는 상담사입니다. 
       
 다음 원칙을 따라 상담을 진행해주세요:
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 상담사 역할: 감정적 공감과 위로를 중시하는 상담사
 
 항상 한국어로 답변해주세요.`;
-    } else if (counselorType === "B") {
+    } else if (counselorType === "analytical") {
       systemPrompt = `당신은 냉철하고 논리적인 분석과 해결책 제시를 중시하는 상담사입니다.
       
 다음 원칙을 따라 상담을 진행해주세요:
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     console.log("OpenAI API 호출 시작");
 
     try {
-      // OpenAI Chat API 호출
+      // OpenAI Chat API 호출 (스트리밍)
       const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
@@ -94,26 +94,57 @@ export async function POST(req: NextRequest) {
           },
           ...messages,
         ],
-        temperature: counselorType === "A" ? 0.7 : 0.5,
+        temperature: counselorType === "empathetic" ? 0.7 : 0.5,
         max_tokens: 1000,
+        stream: true,
       });
 
-      console.log("OpenAI 응답 받음");
+      console.log("OpenAI 스트림 응답 받음");
 
-      const assistantMessage =
-        response.choices[0]?.message?.content ||
-        "죄송합니다. 응답을 생성할 수 없습니다.";
+      // useChat이 기대하는 형식으로 스트리밍 응답 생성
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            let accumulatedContent = "";
 
-      console.log("응답 전송:", assistantMessage.substring(0, 50) + "...");
+            for await (const chunk of response) {
+              const content = chunk.choices[0]?.delta?.content;
+              if (content) {
+                accumulatedContent += content;
 
-      return NextResponse.json({
-        role: "assistant",
-        content: assistantMessage,
+                // useChat이 기대하는 형식: 누적된 전체 텍스트를 전송
+                const data = JSON.stringify({
+                  role: "assistant",
+                  content: accumulatedContent,
+                });
+                controller.enqueue(
+                  new TextEncoder().encode(`data: ${data}\n\n`),
+                );
+              }
+            }
+            // 스트림 종료 신호
+            controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
+            controller.close();
+          } catch (error) {
+            console.error("스트리밍 에러:", error);
+            controller.error(error);
+          }
+        },
+      });
+
+      console.log("스트리밍 응답 전송 시작");
+
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
       });
     } catch (openaiError) {
       console.error("OpenAI API 에러:", openaiError);
 
-      // API 에러 시 모의 응답 사용
+      // API 에러 시 모의 응답 사용 (스트리밍이 아닌 일반 응답)
       const mockResponse = getMockResponse(
         counselorType,
         userName,
@@ -122,19 +153,32 @@ export async function POST(req: NextRequest) {
 
       console.log("모의 응답 사용:", mockResponse.substring(0, 50) + "...");
 
-      return NextResponse.json({
-        role: "assistant",
-        content: mockResponse,
-      });
+      // 에러 시에는 일반 JSON 응답으로 반환
+      return new Response(
+        JSON.stringify({
+          role: "assistant",
+          content: mockResponse,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
     }
   } catch (error) {
     console.error("API Error:", error);
-    return NextResponse.json(
-      {
+    return new Response(
+      JSON.stringify({
         error: "Internal Server Error",
         details: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-      { status: 500 },
     );
   }
 }

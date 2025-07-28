@@ -57,10 +57,11 @@ export default function ChatInterface() {
   const router = useRouter();
   const params = useParams();
   const counselorType = params.counselor as string;
-  const [isTyping, setIsTyping] = useState(false);
   const [userName, setUserName] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const currentCounselor = counselors.find(
@@ -95,7 +96,8 @@ export default function ChatInterface() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setIsTyping(true);
+    setIsLoading(true);
+    setIsStreaming(false);
 
     try {
       const response = await fetch("/api/chat", {
@@ -117,18 +119,63 @@ export default function ChatInterface() {
         throw new Error("API 요청 실패");
       }
 
-      const data = await response.json();
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.content,
-        timestamp: new Date(),
-      };
+      if (reader) {
+        let hasReceivedData = false;
+        let assistantMessageId = "";
 
-      setMessages((prev) => [...prev, assistantMessage]);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") {
+                break;
+              }
+
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.role === "assistant" && parsed.content) {
+                  // 첫 번째 데이터를 받으면 assistant 메시지 생성
+                  if (!hasReceivedData) {
+                    assistantMessageId = (Date.now() + 1).toString();
+                    const assistantMessage: Message = {
+                      id: assistantMessageId,
+                      role: "assistant",
+                      content: parsed.content,
+                      timestamp: new Date(),
+                    };
+                    setMessages((prev) => [...prev, assistantMessage]);
+                    setIsStreaming(true);
+                    hasReceivedData = true;
+                  } else {
+                    // 이후 데이터는 기존 메시지 업데이트
+                    setMessages((prev) =>
+                      prev.map((msg) =>
+                        msg.id === assistantMessageId
+                          ? { ...msg, content: parsed.content }
+                          : msg,
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                console.error("JSON 파싱 오류:", e);
+              }
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error("메시지 전송 실패:", error);
+      // 에러 시 assistant 메시지 생성
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -137,13 +184,14 @@ export default function ChatInterface() {
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setIsTyping(false);
+      setIsLoading(false);
+      setIsStreaming(false);
     }
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || isTyping) return;
+    if (!input.trim() || isLoading) return;
     sendMessage(input);
   };
 
@@ -185,7 +233,7 @@ export default function ChatInterface() {
     lastDate = greetingDate;
   }
 
-  messages.forEach((message, index) => {
+  messages.forEach((message) => {
     const messageDate = message.timestamp;
 
     // 날짜가 바뀌었으면 날짜 구분선 추가
@@ -306,12 +354,16 @@ export default function ChatInterface() {
                     }`}
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <div className="max-w-lg">
+                    <div
+                      className={`flex flex-col max-w-lg ${
+                        item.role === "user" ? "items-end" : "items-start"
+                      }`}
+                    >
                       <div
                         className={`rounded-3xl px-6 py-3 shadow-sm ${
                           item.role === "user"
                             ? "bg-neutral-900 text-white rounded-br-sm"
-                            : `${currentCounselor.lightColor} text-neutral-800 rounded-bl-xl`
+                            : `${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`
                         }`}
                       >
                         <p className="whitespace-pre-wrap leading-relaxed">
@@ -333,12 +385,12 @@ export default function ChatInterface() {
                 );
               })}
 
-              {/* Typing indicator */}
-              {isTyping && (
+              {/* Typing indicator - 스트리밍 중에는 숨김 */}
+              {isLoading && !isStreaming && (
                 <div className="flex justify-start animate-fade-in-up">
                   <div className="max-w-lg">
                     <div
-                      className={`${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-xl px-6 py-3 shadow-sm`}
+                      className={`${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex space-x-1">
@@ -382,11 +434,11 @@ export default function ChatInterface() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="메시지를 입력하세요"
                 className="flex-1 border-neutral-300 rounded-3xl px-6 py-4 text-base focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all"
-                disabled={isTyping}
+                disabled={isLoading}
               />
               <Button
                 type="submit"
-                disabled={isTyping || !input.trim()}
+                disabled={isLoading || !input.trim()}
                 className="bg-neutral-900 hover:bg-neutral-800 rounded-3xl px-8 py-4 shadow-md hover:shadow-lg transition-all duration-300"
               >
                 <Send className="h-5 w-5" />
