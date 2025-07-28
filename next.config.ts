@@ -1,12 +1,18 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+const basePath = isProd ? "/gominAI" : "";
+
 const nextConfig: NextConfig = {
-  output: "export", // 꼭 필요: static export
   images: {
-    unoptimized: true, // static export 시 필수
+    unoptimized: true,
   },
-  basePath: "/gominAI", // GitHub Pages 하위 경로 대응
-  assetPrefix: "/gominAI/", // static 파일 prefix
+  ...(isProd && {
+    output: "export",
+    trailingSlash: true,
+    basePath: basePath,
+    assetPrefix: basePath + "/",
+  }),
 };
 
 export default nextConfig;
