@@ -2,7 +2,6 @@
 
 import type React from "react";
 
-import { useChat } from "@ai-sdk/react";
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -46,22 +45,23 @@ const isSameDay = (date1: Date, date2: Date) => {
   return date1.toDateString() === date2.toDateString();
 };
 
+// 메시지 타입 정의
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
 export default function ChatInterface() {
   const router = useRouter();
   const params = useParams();
   const counselorType = params.counselor as string;
   const [isTyping, setIsTyping] = useState(false);
   const [userName, setUserName] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-      body: {
-        counselorType,
-        userName,
-      },
-    });
 
   const currentCounselor = counselors.find(
     (counselor) => counselor.id === counselorType,
@@ -83,14 +83,68 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    setIsTyping(isLoading);
-  }, [isLoading]);
+  const sendMessage = async (content: string) => {
+    if (!content.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: content.trim(),
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsTyping(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+          counselorType,
+          userName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("API 요청 실패");
+      }
+
+      const data = await response.json();
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.content,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("메시지 전송 실패:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "죄송합니다. 메시지 전송에 실패했습니다. 다시 시도해주세요.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    handleSubmit(e);
+    if (!input.trim() || isTyping) return;
+    sendMessage(input);
   };
 
   if (!currentCounselor || !userName) {
@@ -132,7 +186,7 @@ export default function ChatInterface() {
   }
 
   messages.forEach((message, index) => {
-    const messageDate = new Date(message.createdAt || new Date());
+    const messageDate = message.timestamp;
 
     // 날짜가 바뀌었으면 날짜 구분선 추가
     if (!lastDate || !isSameDay(messageDate, lastDate)) {
@@ -325,7 +379,7 @@ export default function ChatInterface() {
             <form onSubmit={onSubmit} className="flex gap-4">
               <Input
                 value={input}
-                onChange={handleInputChange}
+                onChange={(e) => setInput(e.target.value)}
                 placeholder="메시지를 입력하세요"
                 className="flex-1 border-neutral-300 rounded-3xl px-6 py-4 text-base focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all"
                 disabled={isTyping}

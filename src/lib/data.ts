@@ -4,7 +4,7 @@ import { CounselorInterface } from "@/types/counselor";
 // 상담사 데이터
 export const counselors: CounselorInterface[] = [
   {
-    id: "empathetic",
+    id: "A",
     name: "AGENT | GONG",
     title: "공감형 상담사",
     type: "공감형 상담사",
@@ -24,7 +24,7 @@ export const counselors: CounselorInterface[] = [
       `안녕하세요 ${name}님, AGENT | GONG입니다. 편안한 마음으로 이야기를 나누어 보세요. 오늘은 어떤 일로 상담을 원하시나요?`,
   },
   {
-    id: "analytical",
+    id: "B",
     name: "AGENT | SOL",
     title: "해결중심 상담사",
     type: "해결중심 상담사",
