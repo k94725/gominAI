@@ -51,8 +51,8 @@ export default function CounselorSelection() {
         </div>
 
         {/* Help Text */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-4xl p-8 max-w-2xl mx-auto shadow-sm border border-neutral-200">
+        <div className="text-center mt-24">
+          <div className="bg-white rounded-3xl p-8 max-w-2xl mx-auto shadow-sm border border-neutral-200">
             <h3 className="text-lg font-semibold text-neutral-900 mb-3">
               상담사 선택 가이드
             </h3>

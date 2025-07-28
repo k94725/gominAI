@@ -14,4 +14,5 @@ export interface CounselorInterface {
   features: string[];
   approach: string;
   personality: string;
+  greeting: (name: string) => string;
 }
