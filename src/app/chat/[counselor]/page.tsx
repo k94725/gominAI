@@ -169,7 +169,7 @@ export default function ChatInterface() {
                 상담 진행 중
               </Badge>
             </div>
-            <div className="flex items-center py-3 gapx-6">
+            <div className="flex items-center gap-6 py-3">
               <div
                 className={`w-16 h-16 ${currentCounselor.color} rounded-3xl flex items-center justify-center`}
               >
@@ -216,7 +216,7 @@ export default function ChatInterface() {
                     >
                       <div className="max-w-lg">
                         <div
-                          className={`${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
+                          className={`${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
                         >
                           <p className="leading-relaxed text-neutral-800">
                             {item.content}
@@ -253,7 +253,7 @@ export default function ChatInterface() {
                         className={`rounded-3xl px-6 py-3 shadow-sm ${
                           item.role === "user"
                             ? "bg-neutral-900 text-white rounded-br-sm"
-                            : `${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`
+                            : `${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`
                         }`}
                       >
                         <p className="leading-relaxed whitespace-pre-wrap">
@@ -282,7 +282,7 @@ export default function ChatInterface() {
                   <div className="flex justify-start animate-fade-in-up">
                     <div className="max-w-lg">
                       <div
-                        className={`${currentCounselor.lightColor} border border-neutral-200 rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
+                        className={`${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
                       >
                         <div className="flex items-center space-x-3">
                           <div className="flex space-x-1">
