@@ -1,18 +1,10 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === "production";
-const basePath = isProd ? "/gominAI" : "";
-
 const nextConfig: NextConfig = {
+  // Vercel에서는 자동으로 최적화됨
   images: {
-    unoptimized: true,
+    domains: [], // 필요시 외부 이미지 도메인 추가
   },
-  ...(isProd && {
-    output: "export",
-    trailingSlash: true,
-    basePath: basePath,
-    assetPrefix: basePath + "/",
-  }),
 };
 
 export default nextConfig;
