@@ -316,18 +316,35 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                 )}
               <div ref={messagesEndRef} />
             </div>
+            <form onSubmit={onSubmit} className="flex gap-4 p-4">
+              <Input
+                value={input}
+                onChange={handleInputChange}
+                placeholder="메시지를 입력하세요"
+                className="flex-1 px-6 py-4 text-base transition-colors border-neutral-300 rounded-3xl"
+                disabled={isLoading}
+                autoFocus
+              />
+              <Button
+                type="submit"
+                disabled={isLoading || !input.trim()}
+                className="transition-all duration-300 shadow-md sm:p-4 md:px-8 md:py-4 bg-neutral-900 hover:bg-neutral-800 rounded-3xl hover:shadow-lg"
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </form>
           </CardContent>
         </Card>
 
         {/* Input Form */}
-        <Card className="bg-white shadow-sm border-neutral-200 rounded-3xl">
+        {/* <Card className="bg-white shadow-sm border-neutral-200 rounded-3xl">
           <CardContent className="p-8">
             <form onSubmit={onSubmit} className="flex gap-4">
               <Input
                 value={input}
                 onChange={handleInputChange}
                 placeholder="메시지를 입력하세요"
-                className="flex-1 px-6 py-4 text-base transition-all border-neutral-300 rounded-3xl focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+                className="flex-1 px-6 py-4 text-base transition-colors border-neutral-300 rounded-3xl"
                 disabled={isLoading}
               />
               <Button
@@ -337,14 +354,14 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
               >
                 <Send className="w-5 h-5" />
               </Button>
-            </form>
-            <div className="flex items-center justify-center mt-6">
-              <p className="px-6 py-3 text-sm rounded-full text-neutral-500 bg-neutral-100">
-                AI 상담사와 대화 중 • 응급상황 시 전문기관에 연락하세요
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </form> */}
+        <div className="flex items-center justify-center mt-6">
+          <p className="px-6 py-3 text-sm rounded-full text-neutral-500 bg-neutral-100">
+            AI 상담사와 대화 중 • 응급상황 시 전문기관에 연락하세요
+          </p>
+        </div>
+        {/* </CardContent>
+        </Card> */}
       </div>
     </div>
   );
