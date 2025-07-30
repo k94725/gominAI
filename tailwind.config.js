@@ -23,6 +23,16 @@ const config = {
     "bg-analytical-light",
     "border-empathetic/20",
     "border-analytical/20",
+    // themeColor 클래스들
+    "bg-themeColor-violet",
+    "bg-themeColor-green",
+    "bg-themeColor-yellow",
+    "text-themeColor-violet",
+    "text-themeColor-green",
+    "text-themeColor-yellow",
+    "border-themeColor-violet",
+    "border-themeColor-green",
+    "border-themeColor-yellow",
   ],
   theme: {
     extend: {
@@ -82,6 +92,11 @@ const config = {
         analytical: {
           DEFAULT: "#3b82f6", // blue-500
           light: "#dbeafe", // blue-100
+        },
+        themeColor: {
+          violet: "#AB9BFF",
+          green: "#97FABB",
+          yellow: "#FFEFB9",
         },
       },
     },
