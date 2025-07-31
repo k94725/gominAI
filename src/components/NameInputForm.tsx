@@ -73,12 +73,7 @@ export function NameInputForm({ onNameSubmit }: NameInputFormProps) {
                   autoFocus
                 />
               </div>
-              <Button
-                type="submit"
-                disabled={!userName.trim()}
-                // variant="secondary"
-                size="full"
-              >
+              <Button type="submit" disabled={!userName.trim()} size="full">
                 시작하기
                 <ArrowRight className="w-5 h-5 ml-3" />
               </Button>

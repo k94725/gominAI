@@ -6,20 +6,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CounselorInterface } from "@/types/counselor";
+import Image from "next/image";
 
 interface CounselorCardProps {
   counselor: CounselorInterface;
 }
 
 export function CounselorCard({ counselor }: CounselorCardProps) {
-  const { icon: Icon, name, type, description, iconBgColor } = counselor;
+  const { name, type, description, img } = counselor;
   return (
-    <Card className="bg-white border-neutral-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className="text-center pb-6 pt-8">
-        <div
-          className={`w-16 h-16 ${iconBgColor} rounded-3xl flex items-center justify-center mx-auto mb-4`}
-        >
-          <Icon className="h-8 w-8 text-white" />
+    <Card className="relative transition-shadow bg-white shadow-sm border-neutral-200 rounded-3xl hover:shadow-md">
+      <CardHeader className="pt-40 pb-6 text-center">
+        <div className="w-[250px] h-[250px] absolute left-[50%] -translate-x-1/2 -top-[90px]">
+          <Image
+            src={img}
+            alt={name}
+            width={300}
+            height={300}
+            className="w-full h-full"
+          />
         </div>
         <CardTitle className="text-xl font-semibold text-neutral-900">
           {name}
@@ -27,7 +32,7 @@ export function CounselorCard({ counselor }: CounselorCardProps) {
         <CardDescription className="text-neutral-600">{type}</CardDescription>
       </CardHeader>
       <CardContent className="px-8 pb-8">
-        <p className="text-sm text-neutral-600 text-center leading-relaxed">
+        <p className="text-sm leading-relaxed text-center break-keep text-neutral-600">
           {description}
         </p>
       </CardContent>

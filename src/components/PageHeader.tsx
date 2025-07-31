@@ -13,24 +13,22 @@ export function PageHeader({
   onNameChange,
 }: PageHeaderProps) {
   return (
-    <div className="text-center mb-20">
-      <div className="inline-flex items-center justify-center w-20 h-20 bg-neutral-900 rounded-3xl mb-8">
-        <MessageCircle className="h-10 w-10 text-white" />
+    <div className="mb-20 text-center">
+      <div className="inline-flex items-center justify-center w-20 h-20 mb-8 bg-themeColor-green rounded-3xl">
+        <MessageCircle className="w-10 h-10 text-white" />
       </div>
-      <h1 className="text-5xl font-semibold text-neutral-900 mb-6 tracking-tight">
+      <h1 className="mb-6 text-4xl font-semibold tracking-tight md:text-5xl text-neutral-900">
         AI 심리 상담
       </h1>
-      <p className="text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed mb-8">
-        안녕하세요, {userName}님
+      <p className="max-w-2xl mx-auto mb-8 text-base leading-relaxed md:text-xl text-neutral-600">
+        {userName}님을 위한 상담사가 준비되었습니다.
         <br />
-        전문적인 AI 상담사와 함께하는 개인 맞춤형 심리 상담 서비스
+        <span className="font-bold text-themeColor-violet">고민아이</span>의
+        맞춤형 AI 상담으로 마음을 위로받고 고민을 해결해보세요!
       </p>
-      <Button
-        onClick={onContinue}
-        className="bg-neutral-900 hover:bg-neutral-800 rounded-3xl px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
-      >
+      <Button onClick={onContinue} size="lg">
         상담 시작하기
-        <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+        <ArrowRight className="w-6 h-6 ml-3 transition-transform group-hover:translate-x-1" />
       </Button>
       <div className="mt-4">
         <Button

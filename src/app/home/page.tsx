@@ -56,7 +56,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-6 py-16 max-w-6xl">
+      <div className="container max-w-6xl px-6 py-16 mx-auto">
         <PageHeader
           userName={userName}
           onContinue={handleContinue}
@@ -64,7 +64,7 @@ export default function HomePage() {
         />
 
         {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 max-w-4xl mx-auto">
+        <div className="grid max-w-4xl grid-cols-1 gap-8 mx-auto mb-32 md:grid-cols-3">
           {featuresWithIcons.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}
@@ -72,10 +72,10 @@ export default function HomePage() {
 
         {/* Counselor Preview */}
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-semibold text-neutral-900 text-center mb-12">
+          <h2 className="mb-32 text-3xl font-semibold text-center text-neutral-900">
             상담사 에이전트 소개
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid gap-32 md:gap-8 md:grid-cols-2">
             {counselors.map((counselor, index) => (
               <CounselorCard key={index} counselor={counselor} />
             ))}
