@@ -24,43 +24,49 @@ export default function CounselorSelection() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-6 py-16 max-w-6xl">
+      <div className="container max-w-6xl px-6 py-16 mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="mb-32 text-center">
           <Button
             variant="ghost"
             onClick={() => router.push("/")}
-            className="mb-8 flex items-center gap-3 hover:bg-neutral-100 rounded-3xl px-6 py-3 mx-auto"
+            className="flex items-center gap-3 px-6 py-3 mx-auto mb-8 hover:bg-neutral-100 rounded-3xl"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="w-5 h-5" />
             메인으로 돌아가기
           </Button>
-          <h1 className="text-4xl font-semibold text-neutral-900 mb-4 tracking-tight">
-            안녕하세요, {userName}님
+          <h1 className="mb-4 text-4xl font-semibold tracking-tight text-neutral-900">
+            안녕하세요,{" "}
+            <span className="font-bold text-themeColor-violet">{userName}</span>
+            님
           </h1>
-          <p className="text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="max-w-2xl mx-auto text-xl leading-relaxed text-neutral-600">
             어떤 상담사와 함께 이야기를 나누고 싶으신가요?
           </p>
         </div>
 
         {/* Counselor Cards */}
-        <div className="max-w-4xl grid md:grid-cols-2 gap-8 mx-auto">
+        <div className="grid max-w-4xl gap-32 mx-auto md:gap-8 md:grid-cols-2">
           {counselors.map((counselor, index) => (
             <CounselorDetailCard key={index} counselor={counselor} />
           ))}
         </div>
 
         {/* Help Text */}
-        <div className="text-center mt-24">
-          <div className="bg-white rounded-3xl p-8 max-w-2xl mx-auto shadow-sm border border-neutral-200">
-            <h3 className="text-lg font-semibold text-neutral-900 mb-3">
+        <div className="mt-24 text-center">
+          <div className="max-w-2xl p-8 mx-auto bg-white border shadow-sm rounded-3xl border-neutral-200">
+            <h3 className="mb-3 text-lg font-semibold text-neutral-900">
               상담사 선택 가이드
             </h3>
-            <p className="text-neutral-600 leading-relaxed text-sm">
-              <strong>공감형 상담사</strong>는 감정적 지지와 위로가 필요할 때,
+            <p className="text-sm leading-relaxed text-neutral-600">
+              필요에 맞게 원하는 상담사를 선택해주세요.
               <br />
-              <strong>해결중심 상담사</strong>는 구체적인 문제 해결이 필요할 때
-              추천드립니다.
+              <span className="font-bold text-pink-500">AGENT | GONG</span>은
+              감정적 지지와 위로가 필요할 때,
+              <br />
+              <span className="font-bold text-blue-500">AGENT | SOL</span>은
+              구체적인 문제 해결이 필요할 때 추천드립니다.
+              <br />
               <br />
               언제든지 다른 상담사로 변경할 수 있습니다.
             </p>

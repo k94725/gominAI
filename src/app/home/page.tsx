@@ -36,6 +36,7 @@ export default function HomePage() {
   };
 
   const handleNameChange = () => {
+    localStorage.removeItem("userName");
     router.push("/username");
   };
 
