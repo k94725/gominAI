@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useChat } from "ai/react";
@@ -14,39 +13,11 @@ import { counselors } from "@/lib/data";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import Image from "next/image";
 import { Modal } from "./modal";
-
-// 시간 포맷팅 함수
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString("ko-KR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-};
-
-// 날짜 포맷팅 함수
-const formatDate = (date: Date) => {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (date.toDateString() === today.toDateString()) {
-    return "오늘";
-  } else if (date.toDateString() === yesterday.toDateString()) {
-    return "어제";
-  } else {
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-};
-
-// 같은 날인지 확인하는 함수
-const isSameDay = (date1: Date, date2: Date) => {
-  return date1.toDateString() === date2.toDateString();
-};
+import { useProcessedMessages } from "@/hooks/useProcessedMessages";
+import { DateSeparator } from "@/components/chat/DateSeparator";
+import { GreetingMessage } from "@/components/chat/GreetingMessage";
+import { ChatMessage } from "@/components/chat/ChatMessage";
+import { TypingIndicator } from "@/components/chat/TypingIndicator";
 
 interface ChatInterfaceProps {
   counselorType: string;
@@ -94,67 +65,15 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
     router.push("/counselors");
   };
 
+  const processedMessages = useProcessedMessages({
+    messages,
+    currentCounselor,
+    userName,
+  });
+
   if (!currentCounselor || !userName) {
     return <LoadingSpinner />;
   }
-
-  // 메시지 타입 정의
-  type MessageItem =
-    | { type: "date-separator"; date: Date; key: string }
-    | { type: "greeting"; content: string; timestamp: Date; key: string }
-    | {
-        type: "message";
-        role: string;
-        content: string;
-        timestamp: Date;
-        key: string;
-        id: string;
-      };
-
-  // 메시지에 날짜 구분선 추가
-  const messagesWithDateSeparators: MessageItem[] = [];
-  let lastDate: Date | null = null;
-
-  // 초기 인사말 추가
-  if (messages.length === 0 && currentCounselor) {
-    const greetingDate = new Date();
-    messagesWithDateSeparators.push({
-      type: "date-separator",
-      date: greetingDate,
-      key: `date-${greetingDate.toDateString()}`,
-    });
-    messagesWithDateSeparators.push({
-      type: "greeting",
-      content: currentCounselor.greeting(userName),
-      timestamp: greetingDate,
-      key: "greeting",
-    });
-    lastDate = greetingDate;
-  }
-
-  messages.forEach((message) => {
-    const messageDate = message.createdAt || new Date();
-
-    // 날짜가 바뀌었으면 날짜 구분선 추가
-    if (!lastDate || !isSameDay(messageDate, lastDate)) {
-      messagesWithDateSeparators.push({
-        type: "date-separator",
-        date: messageDate,
-        key: `date-${messageDate.toDateString()}`,
-      });
-    }
-
-    messagesWithDateSeparators.push({
-      type: "message",
-      role: message.role,
-      content: message.content,
-      timestamp: messageDate,
-      key: message.id,
-      id: message.id,
-    });
-
-    lastDate = messageDate;
-  });
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -207,81 +126,32 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
         <Card className="mb-8 overflow-hidden bg-white shadow-sm border-neutral-200 rounded-3xl">
           <CardContent className="p-0">
             <div className="h-[70vh] overflow-y-auto p-6 md:p-8 space-y-6">
-              {messagesWithDateSeparators.map((item, index) => {
+              {processedMessages.map((item, index) => {
                 if (item.type === "date-separator") {
-                  return (
-                    <div key={item.key} className="flex justify-center mt-4">
-                      <div className="px-4 py-2 text-xs font-semibold rounded-full md:text-sm text-neutral-500 bg-neutral-100">
-                        {formatDate(item.date)}
-                      </div>
-                    </div>
-                  );
+                  return <DateSeparator key={item.key} date={item.date} />;
                 }
 
                 if (item.type === "greeting") {
                   return (
-                    <div
+                    <GreetingMessage
                       key={item.key}
-                      className="flex justify-start animate-fade-in-up"
-                    >
-                      <div className="max-w-lg">
-                        <div
-                          className={`rounded-3xl px-4 py-2 md:px-6 md:py-3 shadow-sm text-sm md:text-base ${currentCounselor.lightColor} text-neutral-500 rounded-3xl rounded-bl-sm`}
-                        >
-                          <p className="text-sm leading-relaxed whitespace-pre-wrap md:text-base text-neutral-500">
-                            {item.content}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs md:text-sm">
-                          <p className="text-neutral-500">
-                            {currentCounselor.name}
-                          </p>
-                          <p className="text-neutral-400">
-                            {formatTime(item.timestamp)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      content={item.content}
+                      timestamp={item.timestamp}
+                      counselor={currentCounselor}
+                    />
                   );
                 }
 
-                // 일반 메시지
                 return (
-                  <div
+                  <ChatMessage
                     key={item.key}
-                    className={`flex animate-fade-in-up ${
-                      item.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <div
-                      className={`flex flex-col max-w-lg ${
-                        item.role === "user" ? "items-end" : "items-start"
-                      }`}
-                    >
-                      <div
-                        className={`rounded-3xl px-4 py-2 md:px-6 md:py-3 shadow-sm text-sm md:text-base ${
-                          item.role === "user"
-                            ? "bg-themeColor-violet/70 leading-relaxed whitespace-pre-wrap text-white rounded-br-sm"
-                            : `${currentCounselor.lightColor} text-neutral-500 rounded-3xl rounded-bl-sm`
-                        }`}
-                      >
-                        <p className="leading-relaxed whitespace-pre-wrap">
-                          {item.content}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3 mt-1 text-xs md:text-sm">
-                        <p className="text-neutral-500">
-                          {item.role === "user"
-                            ? userName
-                            : currentCounselor.name}
-                        </p>
-                        <p className="text-neutral-400">
-                          {formatTime(item.timestamp)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    role={item.role}
+                    content={item.content}
+                    timestamp={item.timestamp}
+                    counselor={currentCounselor}
+                    userName={userName}
+                    index={index}
+                  />
                 );
               })}
 
@@ -289,38 +159,7 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
               {isLoading &&
                 (messages.length === 0 ||
                   messages[messages.length - 1].role === "user") && (
-                  <div className="flex justify-start animate-fade-in-up">
-                    <div className="max-w-lg">
-                      <div
-                        className={`${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="flex space-x-1">
-                            <div className="w-2 h-2 rounded-full bg-neutral-400 animate-bounce"></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-neutral-400 animate-bounce"
-                              style={{ animationDelay: "0.1s" }}
-                            ></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-neutral-400 animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                          </div>
-                          <span className="text-sm text-neutral-500">
-                            답변을 작성하고 있습니다
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        <p className="text-sm text-neutral-500">
-                          {currentCounselor.name}
-                        </p>
-                        <p className="text-xs text-neutral-400">
-                          {formatTime(new Date())}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <TypingIndicator counselor={currentCounselor} />
                 )}
               <div ref={messagesEndRef} />
             </div>

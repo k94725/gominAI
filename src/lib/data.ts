@@ -21,7 +21,7 @@ export const counselors: CounselorInterface[] = [
     personality:
       "저는 따뜻하고 공감적인 성향으로,<br/>내담자의 감정을 깊이 이해하고 위로를 제공해요.<br/>",
     greeting: (name: string) =>
-      `안녕하세요 ${name}님, AGENT | GONG입니다. 편안한 마음으로 이야기를 나누어 보세요. 오늘은 어떤 일로 상담을 원하시나요?`,
+      `안녕하세요. ${name}님, AGENT | GONG 이에요! 편안한 마음으로 이야기를 나누어 보세요. 오늘은 어떤 일로 저를 찾아오셨나요?`,
     img: "/assets/counselor_empathetic.png",
     profileImg: "/assets/counselor_img_empathetic.png",
   },
@@ -43,7 +43,7 @@ export const counselors: CounselorInterface[] = [
     personality:
       "논리적이고 체계적인 성향으로,<br/>내담자에게 필요한 실용적인 해결책을 제공합니다.",
     greeting: (name: string) =>
-      `안녕하세요 ${name}님, AGENT | SOL입니다. 오늘 어떤 문제에 대해 함께 이야기해볼까요? 구체적으로 말씀해 주시면 도움이 되겠습니다.`,
+      `안녕하세요. ${name}님, AGENT | SOL입니다. 오늘 어떤 문제에 대해 함께 이야기해볼까요? 구체적으로 말씀해 주시면 도움이 되겠습니다.`,
     img: "/assets/counselor_analytical.png",
     profileImg: "/assets/counselor_img_analytical.png",
   },
