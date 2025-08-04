@@ -9,7 +9,7 @@ export const counselors: CounselorInterface[] = [
     title: "공감형 상담사",
     type: "공감형 상담사",
     description:
-      "안녕하세요! AGENT | GONG 이에요!<br/>저는 당신의 감정을 이해하고 공감하며<br/>따뜻한 지지와 위로를 제공하는 상담사에요.<br/>힘든 일이 있다면 저를 찾아주세요!",
+      "반가워요! AGENT | GONG 이에요!<br/>저는 당신의 감정을 이해하고 공감하며<br/>따뜻한 지지와 위로를 제공하는 상담사에요.<br/>힘든 일이 있다면 저를 찾아주세요!",
     icon: Heart,
     color: "bg-empathetic",
     lightColor: "bg-empathetic-light",

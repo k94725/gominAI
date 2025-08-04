@@ -50,23 +50,25 @@ export function CounselorDetailCard({ counselor }: CounselorDetailCardProps) {
       </CardHeader>
       <CardContent className="px-8 pb-8">
         <div className="mb-10 space-y-8">
-          <div className="flex flex-row items-start justify-center gap-2">
-            <Image
-              src="/assets/icon_ quotes_open.svg"
-              alt={name}
-              width={20}
-              height={20}
-            />
+          <div className="relative">
             <p
               className="pt-3 text-sm leading-relaxed text-center text-neutral-600 break-keep"
               dangerouslySetInnerHTML={{ __html: description }}
             />
-            <Image
-              src="/assets/icon_ quotes_close.svg"
-              alt={name}
-              width={20}
-              height={20}
-            />
+            <div className="absolute top-0 right-[50%] translate-x-[50%] flex flex-row items-center justify-between w-full max-w-[280px]">
+              <Image
+                src="/assets/icon_ quotes_open.svg"
+                alt={name}
+                width={20}
+                height={20}
+              />
+              <Image
+                src="/assets/icon_ quotes_close.svg"
+                alt={name}
+                width={20}
+                height={20}
+              />
+            </div>
           </div>
           <div className={`rounded-3xl`}>
             <h4 className="font-semibold text-center text-neutral-900">

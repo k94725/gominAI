@@ -35,12 +35,12 @@ export default function CounselorSelection() {
             <ArrowLeft className="w-5 h-5" />
             메인으로 돌아가기
           </Button>
-          <h1 className="mb-4 text-4xl font-semibold tracking-tight text-neutral-900">
+          <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl text-neutral-900">
             안녕하세요,{" "}
             <span className="font-bold text-themeColor-violet">{userName}</span>
             님
           </h1>
-          <p className="max-w-2xl mx-auto text-xl leading-relaxed text-neutral-600">
+          <p className="max-w-2xl mx-auto text-base leading-relaxed md:text-xl text-neutral-600">
             어떤 상담사와 함께 이야기를 나누고 싶으신가요?
           </p>
         </div>
