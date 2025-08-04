@@ -28,6 +28,7 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
   const [userName, setUserName] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
@@ -54,10 +55,25 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // 메시지가 변경될 때마다 input에 포커스 유지
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [messages, isLoading]);
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
+
     handleSubmit(e);
+
+    // 메시지 전송 후 포커스 유지
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   const handleCounselorChange = () => {
@@ -165,6 +181,7 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
             </div>
             <form onSubmit={onSubmit} className="flex gap-4 p-4">
               <Input
+                ref={inputRef}
                 value={input}
                 onChange={handleInputChange}
                 placeholder="메시지를 입력하세요"
