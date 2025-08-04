@@ -30,11 +30,11 @@ export function PageHeader({
         상담 시작하기
         <ArrowRight className="w-6 h-6 ml-3 transition-transform group-hover:translate-x-1" />
       </Button>
-      <div className="mt-4">
+      <div className="mt-1">
         <Button
-          variant="ghost"
+          variant="link"
           onClick={onNameChange}
-          className="text-sm text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-2xl"
+          // className="text-sm text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-2xl"
         >
           다른 이름으로 시작하기
         </Button>

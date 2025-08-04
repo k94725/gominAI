@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { counselors } from "@/lib/data";
 import { CounselorDetailCard } from "@/components/CounselorDetailCard";
 
@@ -27,14 +26,6 @@ export default function CounselorSelection() {
       <div className="container max-w-6xl px-6 py-16 mx-auto">
         {/* Header */}
         <div className="mb-32 text-center">
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/")}
-            className="flex items-center gap-3 px-6 py-3 mx-auto mb-8 hover:bg-neutral-100 rounded-3xl"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            메인으로 돌아가기
-          </Button>
           <h1 className="mb-4 text-3xl font-semibold tracking-tight md:text-4xl text-neutral-900">
             안녕하세요,{" "}
             <span className="font-bold text-themeColor-violet">{userName}</span>
@@ -43,6 +34,9 @@ export default function CounselorSelection() {
           <p className="max-w-2xl mx-auto text-base leading-relaxed md:text-xl text-neutral-600">
             어떤 상담사와 함께 이야기를 나누고 싶으신가요?
           </p>
+          <Button variant="link" onClick={() => router.push("/")}>
+            메인으로 돌아가기
+          </Button>
         </div>
 
         {/* Counselor Cards */}

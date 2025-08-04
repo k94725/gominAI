@@ -9,10 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send, MessageCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { RefreshCcw, Send } from "lucide-react";
 import { counselors } from "@/lib/data";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import Image from "next/image";
+import { Modal } from "./modal";
 
 // 시간 포맷팅 함수
 const formatTime = (date: Date) => {
@@ -54,6 +63,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ counselorType }: ChatInterfaceProps) {
   const router = useRouter();
   const [userName, setUserName] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
@@ -65,7 +75,6 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
   const currentCounselor = counselors.find(
     (counselor) => counselor.id === counselorType,
   );
-  const IconComponent = currentCounselor?.icon || MessageCircle;
 
   useEffect(() => {
     // 로컬 스토리지에서 사용자 이름 가져오기
@@ -86,6 +95,11 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     handleSubmit(e);
+  };
+
+  const handleCounselorChange = () => {
+    setShowConfirmDialog(false);
+    router.push("/counselors");
   };
 
   if (!currentCounselor || !userName) {
@@ -154,21 +168,11 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
     <div className="min-h-screen bg-neutral-50">
       <div className="container max-w-4xl px-6 py-8 mx-auto">
         {/* Header */}
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/counselors")}
-            className="flex items-center gap-3 px-6 py-3 mx-auto mb-4 md:mb-8 hover:bg-neutral-100 rounded-3xl"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            상담사 변경
-          </Button>
-        </div>
         <Card className="mb-8 bg-white shadow-sm border-neutral-200 rounded-3xl">
           <CardHeader className="pb-6 md:p-8">
             <div className="flex items-center gap-4 md:gap-6">
               <div
-                className={`flex items-end justify-center w-20 h-20 overflow-hidden rounded-full md:w-32 md:h-32 ${currentCounselor.iconBgColor}`}
+                className={`shrink-0 flex items-end justify-center w-20 h-20 overflow-hidden rounded-full md:w-32 md:h-32 ${currentCounselor.iconBgColor}`}
               >
                 <Image
                   src={currentCounselor.profileImg}
@@ -178,10 +182,18 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <div className="flex flex-col justify-between h-20 md:py-4 md:h-32">
+              <div className="flex flex-col justify-between w-full h-20 md:py-4 md:h-32">
                 <div>
-                  <CardTitle className="text-lg font-semibold md:text-2xl text-neutral-900">
+                  <CardTitle className="flex items-center w-full gap-2 text-lg font-semibold md:text-2xl text-neutral-900">
                     {currentCounselor.name}
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowConfirmDialog(true)}
+                      className="gap-1 p-1 w-fit h-fit text-neutral-400"
+                    >
+                      <RefreshCcw className="w-5 h-5" />
+                      <span className="hidden md:block">상담사변경</span>
+                    </Button>
                   </CardTitle>
                   <p className="text-sm md:text-base text-neutral-600">
                     {currentCounselor.title}
@@ -192,7 +204,7 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                   className="px-2 py-1 text-green-700 border-green-200 rounded-full w-fit bg-green-50"
                 >
                   <div className="w-2 h-2 mr-2 bg-green-500 rounded-full animate-pulse"></div>
-                  상담 진행 중
+                  상담 중
                 </Badge>
               </div>
             </div>
@@ -339,12 +351,20 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
           </CardContent>
         </Card>
         <div className="flex items-center justify-center mt-6">
-          <p className="px-6 py-3 text-sm rounded-full text-neutral-500 bg-neutral-100">
-            AI 상담사와 대화 중 • 응급상황 시 전문기관에 연락하세요
+          <p className="px-6 py-3 text-sm text-center rounded-full text-neutral-500 bg-neutral-100">
+            • AI 상담사와 대화 중 •<br />
+            응급상황 시 전문기관에 연락하세요
           </p>
         </div>
-        {/* </CardContent>
-        </Card> */}
+
+        {/* 상담사 변경 확인 모달 */}
+        <Modal
+          open={showConfirmDialog}
+          content="상담사를 변경하시겠습니까?<br/>상담 내용은 저장되지 않습니다."
+          onOpenChange={setShowConfirmDialog}
+          onClickCancel={() => setShowConfirmDialog(false)}
+          onClickConfirm={handleCounselorChange}
+        />
       </div>
     </div>
   );
