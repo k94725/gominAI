@@ -9,14 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { RefreshCcw, Send } from "lucide-react";
 import { counselors } from "@/lib/data";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -63,7 +55,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ counselorType }: ChatInterfaceProps) {
   const router = useRouter();
   const [userName, setUserName] = useState("");
-  const [showConfirmDialog, setShowConfirmDialog] = useState(true);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
