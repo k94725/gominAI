@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Send, MessageCircle } from "lucide-react";
 import { counselors } from "@/lib/data";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import Image from "next/image";
 
 // 시간 포맷팅 함수
 const formatTime = (date: Date) => {
@@ -153,41 +154,46 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
     <div className="min-h-screen bg-neutral-50">
       <div className="container max-w-4xl px-6 py-8 mx-auto">
         {/* Header */}
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/counselors")}
+            className="flex items-center gap-3 px-6 py-3 mx-auto mb-4 md:mb-8 hover:bg-neutral-100 rounded-3xl"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            상담사 변경
+          </Button>
+        </div>
         <Card className="mb-8 bg-white shadow-sm border-neutral-200 rounded-3xl">
-          <CardHeader className="pb-6">
-            <div className="flex items-center justify-between mb-6">
-              <Button
-                variant="ghost"
-                onClick={() => router.push("/counselors")}
-                className="flex items-center gap-3 px-6 py-3 hover:bg-neutral-100 rounded-3xl"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                상담사 변경
-              </Button>
-              <Badge
-                variant="secondary"
-                className="px-6 py-2 text-green-700 border-green-200 rounded-full bg-green-50"
-              >
-                상담 진행 중
-              </Badge>
-            </div>
-            <div className="flex items-center gap-6 py-3">
+          <CardHeader className="pb-6 md:p-8">
+            <div className="flex items-center gap-4 md:gap-6">
               <div
-                className={`w-16 h-16 ${currentCounselor.color} rounded-3xl flex items-center justify-center`}
+                className={`flex items-end justify-center w-20 h-20 overflow-hidden rounded-full md:w-32 md:h-32 ${currentCounselor.iconBgColor}`}
               >
-                <IconComponent className="w-8 h-8 text-white" />
+                <Image
+                  src={currentCounselor.profileImg}
+                  alt={currentCounselor.name}
+                  width={150}
+                  height={150}
+                  className="object-cover w-full h-full"
+                />
               </div>
-              <div>
-                <CardTitle className="mb-1 text-2xl font-semibold text-neutral-900">
-                  {currentCounselor.name}
-                </CardTitle>
-                <p className="text-neutral-600">{currentCounselor.title}</p>
-                <div className="flex items-center mt-2">
-                  <div className="w-2 h-2 mr-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-green-600">
-                    온라인
-                  </span>
+              <div className="flex flex-col justify-between h-20 md:py-4 md:h-32">
+                <div>
+                  <CardTitle className="text-lg font-semibold md:text-2xl text-neutral-900">
+                    {currentCounselor.name}
+                  </CardTitle>
+                  <p className="text-sm md:text-base text-neutral-600">
+                    {currentCounselor.title}
+                  </p>
                 </div>
+                <Badge
+                  variant="secondary"
+                  className="px-2 py-1 text-green-700 border-green-200 rounded-full w-fit bg-green-50"
+                >
+                  <div className="w-2 h-2 mr-2 bg-green-500 rounded-full animate-pulse"></div>
+                  상담 진행 중
+                </Badge>
               </div>
             </div>
           </CardHeader>
@@ -196,15 +202,13 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
         {/* Chat Messages */}
         <Card className="mb-8 overflow-hidden bg-white shadow-sm border-neutral-200 rounded-3xl">
           <CardContent className="p-0">
-            <div className="h-[70vh] overflow-y-auto p-8 space-y-6">
+            <div className="h-[70vh] overflow-y-auto p-6 md:p-8 space-y-6">
               {messagesWithDateSeparators.map((item, index) => {
                 if (item.type === "date-separator") {
                   return (
-                    <div key={item.key} className="flex justify-center my-8">
-                      <div className="px-4 py-2 rounded-full bg-neutral-100">
-                        <span className="text-xs font-medium text-neutral-500">
-                          {formatDate(item.date)}
-                        </span>
+                    <div key={item.key} className="flex justify-center mt-4">
+                      <div className="px-4 py-2 text-xs font-semibold rounded-full md:text-sm text-neutral-500 bg-neutral-100">
+                        {formatDate(item.date)}
                       </div>
                     </div>
                   );
@@ -218,17 +222,17 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                     >
                       <div className="max-w-lg">
                         <div
-                          className={`${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`}
+                          className={`rounded-3xl px-4 py-2 md:px-6 md:py-3 shadow-sm text-sm md:text-base ${currentCounselor.lightColor} text-neutral-500 rounded-3xl rounded-bl-sm`}
                         >
-                          <p className="leading-relaxed text-neutral-800">
+                          <p className="text-sm leading-relaxed whitespace-pre-wrap md:text-base text-neutral-500">
                             {item.content}
                           </p>
                         </div>
-                        <div className="flex items-center gap-3 mt-1">
-                          <p className="text-sm text-neutral-500">
+                        <div className="flex items-center gap-3 mt-1 text-xs md:text-sm">
+                          <p className="text-neutral-500">
                             {currentCounselor.name}
                           </p>
-                          <p className="text-xs text-neutral-400">
+                          <p className="text-neutral-400">
                             {formatTime(item.timestamp)}
                           </p>
                         </div>
@@ -252,23 +256,23 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                       }`}
                     >
                       <div
-                        className={`rounded-3xl px-6 py-3 shadow-sm ${
+                        className={`rounded-3xl px-4 py-2 md:px-6 md:py-3 shadow-sm text-sm md:text-base ${
                           item.role === "user"
-                            ? "bg-neutral-900 text-white rounded-br-sm"
-                            : `${currentCounselor.lightColor} rounded-3xl rounded-bl-sm px-6 py-3 shadow-sm`
+                            ? "bg-themeColor-violet/70 leading-relaxed whitespace-pre-wrap text-white rounded-br-sm"
+                            : `${currentCounselor.lightColor} text-neutral-500 rounded-3xl rounded-bl-sm`
                         }`}
                       >
                         <p className="leading-relaxed whitespace-pre-wrap">
                           {item.content}
                         </p>
                       </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        <p className="text-sm text-neutral-500">
+                      <div className="flex items-center gap-3 mt-1 text-xs md:text-sm">
+                        <p className="text-neutral-500">
                           {item.role === "user"
                             ? userName
                             : currentCounselor.name}
                         </p>
-                        <p className="text-xs text-neutral-400">
+                        <p className="text-neutral-400">
                           {formatTime(item.timestamp)}
                         </p>
                       </div>
@@ -321,40 +325,19 @@ export function ChatInterface({ counselorType }: ChatInterfaceProps) {
                 value={input}
                 onChange={handleInputChange}
                 placeholder="메시지를 입력하세요"
-                className="flex-1 px-6 py-4 text-base transition-colors border-neutral-300 rounded-3xl"
                 disabled={isLoading}
                 autoFocus
               />
               <Button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="transition-all duration-300 shadow-md sm:p-4 md:px-8 md:py-4 bg-neutral-900 hover:bg-neutral-800 rounded-3xl hover:shadow-lg"
+                className="transition-all duration-300 shadow-none sm:p-4 md:px-8 md:py-4 bg-themeColor-green hover:bg-themeColor-green/80 rounded-3xl hover:shadow-none"
               >
                 <Send className="w-5 h-5" />
               </Button>
             </form>
           </CardContent>
         </Card>
-
-        {/* Input Form */}
-        {/* <Card className="bg-white shadow-sm border-neutral-200 rounded-3xl">
-          <CardContent className="p-8">
-            <form onSubmit={onSubmit} className="flex gap-4">
-              <Input
-                value={input}
-                onChange={handleInputChange}
-                placeholder="메시지를 입력하세요"
-                className="flex-1 px-6 py-4 text-base transition-colors border-neutral-300 rounded-3xl"
-                disabled={isLoading}
-              />
-              <Button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="px-8 py-4 transition-all duration-300 shadow-md bg-neutral-900 hover:bg-neutral-800 rounded-3xl hover:shadow-lg"
-              >
-                <Send className="w-5 h-5" />
-              </Button>
-            </form> */}
         <div className="flex items-center justify-center mt-6">
           <p className="px-6 py-3 text-sm rounded-full text-neutral-500 bg-neutral-100">
             AI 상담사와 대화 중 • 응급상황 시 전문기관에 연락하세요

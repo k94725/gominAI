@@ -16,4 +16,5 @@ export interface CounselorInterface {
   personality: string;
   greeting: (name: string) => string;
   img: string;
+  profileImg: string;
 }

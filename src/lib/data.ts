@@ -23,6 +23,7 @@ export const counselors: CounselorInterface[] = [
     greeting: (name: string) =>
       `안녕하세요 ${name}님, AGENT | GONG입니다. 편안한 마음으로 이야기를 나누어 보세요. 오늘은 어떤 일로 상담을 원하시나요?`,
     img: "/assets/counselor_empathetic.png",
+    profileImg: "/assets/counselor_img_empathetic.png",
   },
   {
     id: "analytical",
@@ -44,6 +45,7 @@ export const counselors: CounselorInterface[] = [
     greeting: (name: string) =>
       `안녕하세요 ${name}님, AGENT | SOL입니다. 오늘 어떤 문제에 대해 함께 이야기해볼까요? 구체적으로 말씀해 주시면 도움이 되겠습니다.`,
     img: "/assets/counselor_analytical.png",
+    profileImg: "/assets/counselor_img_analytical.png",
   },
 ];
 

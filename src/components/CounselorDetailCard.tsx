@@ -48,7 +48,7 @@ export function CounselorDetailCard({ counselor }: CounselorDetailCardProps) {
         </CardTitle>
         <CardDescription className="text-neutral-600">{type}</CardDescription>
       </CardHeader>
-      <CardContent className="px-8 pb-8">
+      <CardContent className="p-6 pt-0 md:p-8">
         <div className="mb-10 space-y-8">
           <div className="relative">
             <p
@@ -85,14 +85,14 @@ export function CounselorDetailCard({ counselor }: CounselorDetailCardProps) {
               ))}
             </div>
           </div>
-          <div className="p-8 text-center bg-neutral-50 rounded-3xl">
+          <div className="p-6 text-center md:p-8 bg-neutral-50 rounded-3xl">
             <h4 className="mb-4 font-semibold text-neutral-900">상담 접근법</h4>
             <p
               className="text-sm leading-relaxed text-neutral-600 break-keep"
               dangerouslySetInnerHTML={{ __html: approach }}
             />
           </div>
-          <div className="p-8 text-center bg-neutral-50 rounded-3xl">
+          <div className="p-6 text-center md:p-8 bg-neutral-50 rounded-3xl">
             <h4 className="mb-4 font-semibold text-neutral-900">상담가 성향</h4>
             <p
               className="text-sm leading-relaxed text-neutral-600 break-keep"

@@ -31,10 +31,11 @@ export function CounselorCard({ counselor }: CounselorCardProps) {
         </CardTitle>
         <CardDescription className="text-neutral-600">{type}</CardDescription>
       </CardHeader>
-      <CardContent className="px-8 pb-8">
-        <p className="text-sm leading-relaxed text-center break-keep text-neutral-600">
-          {description}
-        </p>
+      <CardContent className="p-6 md:p-8">
+        <p
+          className="text-sm leading-relaxed text-center break-keep text-neutral-600"
+          dangerouslySetInnerHTML={{ __html: description }}
+        ></p>
       </CardContent>
     </Card>
   );
